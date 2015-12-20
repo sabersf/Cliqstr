@@ -28,7 +28,6 @@ def cliqstr(g):
                     if G.has_edge(j,k):
                          vecd[i] += 1
     vecd /= 2
-    # Solving the system of equations 
-    Mu = np.linalg.solve(matA,vecd)
-    return Mu
-    
+    # Solving the system of equations,using the least-squares solution to a linear matrix equation
+    Mu = np.linalg.lstsq(matA,vecd)
+    return Mu[0]
