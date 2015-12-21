@@ -6,28 +6,33 @@ def generator_size(g):
 def cliqstr(g):
     # finding the maximal cliques using bron kerbosch algorithm in networkx 
     cliq = nx.find_cliques(g)
-    cliques_size = generator_size(nx.find_cliques(g))
-    vecd = np.zeros(cliques_size)
-    matA = np.zeros((cliques_size, cliques_size))
-    cliq_list = [cliques_size]
     # converting the generator type to a 2d list
     counter = 0
-    cliques = [[] for i in cliq]
+    cliques = []
     for i in nx.find_cliques(g):
-        cliques[counter] = i
-        counter += 1
-    assert cliques_size == counter
+        if len(i)>1:
+            cliques.append(i)
+            counter += 1
+    #assert cliques_size == counter
+    print cliques
+    cliques_size = counter
+    vecd = np.zeros(counter)
+    matA = np.zeros((counter, counter))
+    cliq_list = [counter]
     # Calculating matX and vector D in the formula
-    for i in range(cliques_size):
-        for j in range(cliques_size):
+    for i in range(counter):
+        for j in range(counter):
             matA[i,j] = len(set(cliques[i]).intersection(cliques[j]))*(len(set(cliques[i]).intersection(cliques[j])) -1)/2
         matA[i,i] = len(cliques[i]) * (len(cliques[i]) - 1) / 2
         for j in cliques[i]:
             for k in cliques[i]:
                 if j!=k:
-                    if G.has_edge(j,k):
+                    if g.has_edge(j,k):
                          vecd[i] += 1
     vecd /= 2
-    # Solving the system of equations,using the least-squares solution to a linear matrix equation
-    Mu = np.linalg.lstsq(matA,vecd)
-    return Mu[0]
+    # Solving the system of equations 
+    #eps = 0.0000000001
+    #print matA
+    print vecd
+    Mu = np.linalg.tensorsolve(matA,vecd)
+    return Mu
